@@ -38,7 +38,7 @@ final class TicketController extends AbstractController
         /* Buscamos el ticket en el listado de tickets, puede suceder
         que el ticket solicitado no exista */
        
-        $ticket = Ticket::find($id)
+        $ticket = Ticket::find($id);
 
         /* Si $ticket es NULL la incidencia no existe */
         if ($ticket === NULL) {

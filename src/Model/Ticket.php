@@ -96,7 +96,6 @@ final class Ticket
     ?Ticket quiere decir que el método puede devolver o un Ticket o null */
    
        
-    
     public static function find(string $id): ?Ticket
     {
      /* array_find(), disponible en PHP 8.4+ devuelve el primer elemento
@@ -107,7 +106,7 @@ final class Ticket
             Ticket::getAllTickets(),
             fn (Ticket $ticket): bool => $ticket->getId() === $id
         );
-}
+    }
 }
 
 ?>
