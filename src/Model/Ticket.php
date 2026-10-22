@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use InvalidArgumentException;
+
 /* Ticket representa una incidencia en Issueflow como un objeto PHP
 */
 
@@ -35,10 +37,32 @@ final class Ticket
     public function __construct(
         private string $id, 
         private string $title, 
-        private string $priority, 
-        private string $status
+        private TicketPriority $priority, 
+        private TicketStatus $status
         )
-    {}
+    {
+        /*  Validar el formato de id: INC- seguido de cuatro dígitos
+            Para ello usamos una regex: regular expression (expresión regular): '/^INC-\d{4}$/'
+            La función preg_match() compara una cadena de texto con la regex y devuelve 1
+            si la cadena de texto es válida
+        */
+        if(preg_match('/^INC-\d{4}$/', $this->id) !== 1) {
+            throw new InvalidArgumentException('El id no tiene un formato válido');
+        }
+
+        /* Normalización de title: Eliminar espacios en blanco antes y después 
+        La función trim() elimina estos espacios
+        */
+        $normalizedTitle = trim($title);
+
+        /* Verifico que $normalizedTitle no sea una cadena de texto vacía */
+        if ($normalizedTitle === '') {
+            throw new InvalidArgumentException('El título no puede estar vacío');
+        }
+
+        $this->title = $normalizedTitle;
+    }
+    
 
     /* Creamos los getters para cada uno de los atributos */
     public function getId(): string
@@ -49,13 +73,24 @@ final class Ticket
     {
         return $this->title;
     }
-    public function getPriority(): string 
+    public function getPriority(): TicketPriority
     {
         return $this->priority;
     }
-    public function getStatus(): string 
+    public function getStatus(): TicketStatus
     {
         return $this->status;
+    }
+
+    /* Metodo que devuelve true si el ticket tiene una prioridad 'urgent' y false
+    en caso contrario */
+    public function isUrgent(): bool
+    {
+        return $this->priority->isUrgent();
+    }
+    public function isClosed(): bool
+    {
+        return $this->status->isClosed();
     }
 
      /* Mock data de tickets: Data simulada de prueba. La data real
@@ -68,28 +103,36 @@ final class Ticket
             new Ticket(
                 id: 'INC-1001',
                 title: 'No puedo acceder',
-                priority: 'urgent',
-                status: 'open',
+                priority: TicketPriority::Urgent,
+                status: TicketStatus::Open,
             ),
             new Ticket(
                 id: 'INC-1002',
                 title: 'Error en factura',
-                priority: 'high',
-                status: 'in_progress',
+                priority: TicketPriority::High,
+                status: TicketStatus::InProgress
             ),
             new Ticket(
                 id: 'INC-1003',
                 title: 'Actualizar datos',
-                priority: 'normal',
-                status: 'closed',
+                priority: TicketPriority::Normal, 
+                status: TicketStatus::Closed
             ),
             new Ticket(
                 id: 'INC-1004',
                 title: 'El ordenador está en llamas',
-                priority: 'urgent',
-                status: 'in_progress', 
+                priority: TicketPriority::Urgent,
+                status:  TicketStatus::InProgress
+            ),
+            new Ticket(
+                id: 'INC-4532',
+                title: 'Olvidé mi contraseña',
+                priority: TicketPriority::Low,
+                status: TicketStatus::Open
             )
         ];
+        
+               
     }
 
     /* Metodo find que encuentra un ticket en el listado dado su id
