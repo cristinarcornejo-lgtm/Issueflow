@@ -13,6 +13,11 @@ de página específico #}
 <h1>{{ ticket.title }}</h1>
 <p>Prioridad: <strong>{{ ticket.priority.label }}</strong></p>
 <p>Estado: <strong>{{ ticket.status.label }}</strong></p>
+
+{#  Agregar el tiempo de respuesta #}
+
+<p>Objetivo de respuesta: {{ responseTargetHours }} horas</p>
+
   {# Agregamos el mensaje "requiere atencion inmediata" solo
         si el ticket tiene una priority urgente: TicketPriority::Urgent
         Todo lo que este entre el {% if condition %} y el {% endif %}
